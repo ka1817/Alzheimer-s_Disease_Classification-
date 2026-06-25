@@ -5,3 +5,7 @@ matplotlib
 openpyxl
 scikit-learn 
 tensorflow
+fastapi
+uvicorn
+python-multipart
+jinja2

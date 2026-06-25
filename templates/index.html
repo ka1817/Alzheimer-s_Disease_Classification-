@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroPredict | Alzheimer's Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="logo-area">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-icon"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <h1>NeuroPredict</h1>
+            </div>
+            <p class="subtitle">Clinical Diagnostic Support System</p>
+            
+            <div class="info-card">
+                <h3>About this Model</h3>
+                <p>This tool evaluates 7 key clinical metrics using a Machine Learning model to assess the probability of Alzheimer's Disease.</p>
+                <div class="badge">Threshold: 0.35</div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            
+            {% if error %}
+                <div class="alert-box error slide-down">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+            
+            {% if prediction %}
+                <div class="result-panel {{ result_class }} slide-down">
+                    <div class="result-header">
+                        <h2>Assessment Result</h2>
+                        <span class="status-badge {{ result_class }}">{{ prediction }}</span>
+                    </div>
+                    <div class="probability-meter">
+                        <div class="meter-fill" style="width: {{ probability }}%;"></div>
+                    </div>
+                    <p class="prob-text">Calculated Probability: <strong>{{ probability }}%</strong></p>
+                </div>
+            {% endif %}
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Patient Clinical Data</h2>
+                    <p>Please enter the latest assessment metrics below.</p>
+                </div>
+                
+                <form action="/predict" method="POST" id="predictForm">
+                    <div class="form-grid">
+                        
+                        <div class="form-group">
+                            <label for="FunctionalAssessment">Functional Assessment</label>
+                            <input type="number" step="any" id="FunctionalAssessment" name="FunctionalAssessment" required placeholder="Score (e.g., 5.2)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ADL">Activities of Daily Living (ADL)</label>
+                            <input type="number" step="any" id="ADL" name="ADL" required placeholder="Score (e.g., 8.5)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="MMSE">Mini-Mental State Exam (MMSE)</label>
+                            <input type="number" step="any" id="MMSE" name="MMSE" required placeholder="Score (0-30)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="SleepQuality">Sleep Quality</label>
+                            <input type="number" step="any" id="SleepQuality" name="SleepQuality" required placeholder="Score (e.g., 6.0)">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="CholesterolHDL">Cholesterol (HDL)</label>
+                            <input type="number" step="any" id="CholesterolHDL" name="CholesterolHDL" required placeholder="mg/dL (e.g., 55.0)">
+                        </div>
+
+                        <div class="form-group toggle-group">
+                            <label>Memory Complaints</label>
+                            <div class="radio-switch">
+                                <input type="radio" id="mc-no" name="MemoryComplaints" value="0" checked>
+                                <label for="mc-no">No</label>
+                                <input type="radio" id="mc-yes" name="MemoryComplaints" value="1">
+                                <label for="mc-yes">Yes</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group toggle-group">
+                            <label>Behavioral Problems</label>
+                            <div class="radio-switch">
+                                <input type="radio" id="bp-no" name="BehavioralProblems" value="0" checked>
+                                <label for="bp-no">No</label>
+                                <input type="radio" id="bp-yes" name="BehavioralProblems" value="1">
+                                <label for="bp-yes">Yes</label>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary" id="submitBtn">
+                            <span class="btn-text">Run Assessment</span>
+                            <span class="spinner" id="spinner" style="display: none;"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simple loading state handler
+        document.getElementById('predictForm').addEventListener('submit', function() {
+            const btnText = document.querySelector('.btn-text');
+            const spinner = document.getElementById('spinner');
+            const btn = document.getElementById('submitBtn');
+            
+            btnText.textContent = 'Processing...';
+            spinner.style.display = 'inline-block';
+            btn.classList.add('loading');
+        });
+    </script>
+</body>
+</html>

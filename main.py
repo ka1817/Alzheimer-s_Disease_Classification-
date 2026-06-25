@@ -1,9 +1,7 @@
 # main.py
-
 import logging
 import joblib
 import os
-
 from src.data_ingestion import DataIngestion
 from src.feature_selection import FeatureSelection
 from src.data_splitting import DataSplitting
