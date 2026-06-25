@@ -12,7 +12,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 try:
-    model = joblib.load("models/alzheimers_model.pkl")
+    model = joblib.load("models/RandomForest_Alzheimers_model.pkl")
 except FileNotFoundError:
     print("Error: Model file not found. Please run main.py first to generate alzheimers_model.pkl")
     model = None
