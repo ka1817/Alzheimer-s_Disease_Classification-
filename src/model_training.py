@@ -6,6 +6,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import recall_score, classification_report, make_scorer
 
 logging.basicConfig(
@@ -28,7 +29,7 @@ class ModelTraining:
             ("rf", RandomForestClassifier(random_state=42))
         ])
 
-    def hyperparameter_tuning(self, X_train, y_train):
+    def randomforest_hyperparameter_tuning(self, X_train, y_train):
         """
         Hyperparameter tuning using RECALL (NOT accuracy)
         """
@@ -64,18 +65,51 @@ class ModelTraining:
         logging.info(f"Best CV Recall: {grid_search.best_score_}")
 
         return self.best_model
+    def gradientboosting_hyperparameter_tuning(self, X_train, y_train):
+
+        logging.info("Starting Gradient Boosting hyperparameter tuning (Recall optimized)...")
+
+        pipeline = Pipeline([
+        ("scaler", StandardScaler()),
+        ("gb", GradientBoostingClassifier(random_state=42))
+    ])
+
+        recall_scorer = make_scorer(recall_score)
+
+        param_grid = {
+        "gb__n_estimators": [100, 200, 300],
+        "gb__learning_rate": [0.01, 0.05, 0.1],
+        "gb__max_depth": [3, 5, 7],
+        "gb__min_samples_split": [2, 5],
+        "gb__min_samples_leaf": [1, 2]
+    }
+
+        grid_search = GridSearchCV(
+            estimator=pipeline,
+            param_grid=param_grid,
+            cv=5,
+            scoring=recall_scorer,
+            n_jobs=-1,
+            verbose=1
+    )
+
+        grid_search.fit(X_train, y_train)
+
+        self.best_model = grid_search.best_estimator_
+
+        logging.info(f"Best parameters: {grid_search.best_params_}")
+        logging.info(f"Best CV Recall: {grid_search.best_score_}")
+
+        return self.best_model
 
     def evaluate(self, model, X_test, y_test, threshold=0.35):
 
         logging.info(f"Applying threshold: {threshold}")
 
-    # Predict probabilities
         y_proba = model.predict_proba(X_test)[:, 1]
 
-    # Apply custom threshold
         y_pred = (y_proba >= threshold).astype(int)
 
-    # Evaluate using recall
         recall = recall_score(y_test, y_pred)
 
         logging.info(f"Recall: {recall}")
