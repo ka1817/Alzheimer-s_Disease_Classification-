@@ -8,5 +8,6 @@ fastapi
 uvicorn
 python-multipart
 jinja2
-tensorflow 
 scikeras
+sqlalchemy
+psycopg2-binary
