@@ -1,7 +1,5 @@
 pandas 
 numpy 
-seaborn 
-matplotlib 
 openpyxl
 scikit-learn 
 fastapi
@@ -12,3 +10,5 @@ scikeras
 sqlalchemy
 psycopg2-binary
 python-dotenv
+pydantic
+
